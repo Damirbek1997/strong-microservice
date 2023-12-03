@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    active: ${PROFILE}
+  application:
+    name: auth-service
+
+web:
+  cors:
+    allowed-origins:
+      - "http://localhost:8080"
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+    max-age: 86400
+    allowed-headers:
+      - "Origin"
+      - "X-Api-Key"
+      - "X-Requested-With"
+      - "Content-Type"
+      - "Accept"
+      - "Authorization"
+    exposed-headers:
+      - "X-Get-Header"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8081
+  servlet:
+    context-path: /auth

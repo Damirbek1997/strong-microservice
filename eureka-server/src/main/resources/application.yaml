@@ -1,0 +1,13 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+logging:
+  root:
+    level: debug
+
+server:
+  port: 8761
