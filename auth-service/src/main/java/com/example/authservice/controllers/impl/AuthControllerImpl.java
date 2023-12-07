@@ -3,6 +3,7 @@ package com.example.authservice.controllers.impl;
 import com.example.authservice.controllers.AuthController;
 import com.example.authservice.exceptions.BadRequestException;
 import com.example.authservice.models.ResponseAuthenticationModel;
+import com.example.authservice.models.ResponseAuthorizationModel;
 import com.example.authservice.services.BruteForceProtectService;
 import com.example.authservice.services.JwtService;
 import com.example.authservice.services.impl.CustomUserDetailsService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +37,9 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public String extractUsername(String token) {
-        return jwtService.extractUsername(token);
+    public ResponseAuthorizationModel getAuthorities(String token) {
+        String username = jwtService.extractUsername(token);
+        String authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        return new ResponseAuthorizationModel(username, authorities);
     }
 }

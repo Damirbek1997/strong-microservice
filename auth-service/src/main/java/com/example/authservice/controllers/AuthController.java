@@ -1,6 +1,7 @@
 package com.example.authservice.controllers;
 
 import com.example.authservice.models.ResponseAuthenticationModel;
+import com.example.authservice.models.ResponseAuthorizationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,7 +12,7 @@ public interface AuthController {
     @ResponseStatus(HttpStatus.OK)
     ResponseAuthenticationModel login(@RequestParam String username, @RequestParam String password);
 
-    @GetMapping("/username-from-token")
+    @GetMapping("/authorities")
     @ResponseStatus(HttpStatus.OK)
-    String extractUsername(@RequestParam String token);
+    ResponseAuthorizationModel getAuthorities(@RequestParam String token);
 }

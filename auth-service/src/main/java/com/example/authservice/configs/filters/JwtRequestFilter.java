@@ -45,14 +45,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 .ifPresent(this::setAuthenticationToContext);
     }
 
-    private boolean isTokenValid(String token) {
-        return jwtService.validateToken(token);
+    @Nullable
+    private String getAuthorizationHeader(HttpServletRequest request) {
+        return request.getHeader("Authorization");
     }
 
-    private void setAuthenticationToContext(UserDetails userDetails) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext()
-                .setAuthentication(authenticationToken);
+    private String extractToken(String header) {
+        return header.substring(7);
+    }
+
+    private boolean isTokenValid(String token) {
+        return jwtService.validateToken(token);
     }
 
     private UserDetails retrieveUserDetails(String token) {
@@ -63,12 +66,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         return jwtService.extractUsername(token);
     }
 
-    private String extractToken(String header) {
-        return header.substring(7);
-    }
-
-    @Nullable
-    private String getAuthorizationHeader(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+    private void setAuthenticationToContext(UserDetails userDetails) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext()
+                .setAuthentication(authenticationToken);
     }
 }

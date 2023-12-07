@@ -1,12 +1,12 @@
 package com.example.micrservice.configs.filters;
 
-import com.example.micrservice.services.JwtService;
-import com.example.micrservice.services.impl.CustomUserDetailsService;
+import com.example.micrservice.clients.AuthServiceClient;
+import com.example.micrservice.models.ResponseAuthorizationModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,14 +15,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JwtService jwtService;
+    private final AuthServiceClient authServiceClient;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,9 +41,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         Optional.of(request)
                 .map(this::getAuthorizationHeader)
                 .map(this::extractToken)
-                .filter(this::isTokenValid)
-                .map(this::retrieveUserDetails)
-                .ifPresent(this::setAuthenticationToContext);
+                .map(this::getAuthorities)
+                .ifPresent(responseAuthorizationModel ->
+                        setAuthenticationToContext(responseAuthorizationModel.getUsername(), convertAuthorities(responseAuthorizationModel.getAuthorities())));
     }
 
     private String getAuthorizationHeader(HttpServletRequest request) {
@@ -52,20 +54,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         return header.substring(7);
     }
 
-    private boolean isTokenValid(String token) {
-        return jwtService.validateToken(token);
+    private ResponseAuthorizationModel getAuthorities(String token) {
+        return authServiceClient.getAuthorities(token);
     }
 
-    private UserDetails retrieveUserDetails(String token) {
-        return customUserDetailsService.loadUserByUsername(extractUsername(token));
+    private Set<SimpleGrantedAuthority> convertAuthorities(String authorities) {
+        return Arrays.stream(authorities.split(","))
+                .distinct()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
     }
 
-    private String extractUsername(String token) {
-        return jwtService.extractUsername(token);
-    }
-
-    private void setAuthenticationToContext(UserDetails userDetails) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    private void setAuthenticationToContext(String username, Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, simpleGrantedAuthoritySet);
         SecurityContextHolder.getContext()
                 .setAuthentication(authenticationToken);
     }
