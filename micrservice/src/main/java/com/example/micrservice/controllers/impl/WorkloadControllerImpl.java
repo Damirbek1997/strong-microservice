@@ -24,9 +24,4 @@ public class WorkloadControllerImpl implements WorkloadController {
     public WorkloadModel create(CreateWorkloadModel createWorkloadModel) {
         return workloadService.create(createWorkloadModel);
     }
-
-    @Override
-    public List<WorkloadModel> create(List<CreateWorkloadModel> createWorkloadModels) {
-        return workloadService.create(createWorkloadModels);
-    }
 }

@@ -1,12 +1,9 @@
 package com.example.micrservice.mappers.impl;
 
 import com.example.micrservice.entities.Workload;
-import com.example.micrservice.exceptions.UnexpectedException;
 import com.example.micrservice.mappers.WorkloadMapper;
 import com.example.micrservice.models.WorkloadModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +13,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class WorkloadMapperImpl implements WorkloadMapper {
-    private final ObjectMapper objectMapper;
-
     @Override
     public WorkloadModel toModel(Workload entity) {
         WorkloadModel model = new WorkloadModel();
@@ -56,24 +51,5 @@ public class WorkloadMapperImpl implements WorkloadMapper {
         entity.setActionType(model.getActionType());
 
         return entity;
-    }
-
-    @Override
-    public CreateWorkloadModel toCreateModel(String json) {
-        try {
-            return objectMapper.readValue(json, CreateWorkloadModel.class);
-        } catch (Exception e) {
-            throw new UnexpectedException("Error trying to convert json to CreateWorkLoadModel, error: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public List<CreateWorkloadModel> toCreateModels(String json) {
-        try {
-            return objectMapper.readValue(json, new TypeReference<>() {
-            });
-        } catch (Exception e) {
-            throw new UnexpectedException("Error trying to convert json to CreateWorkLoadModel, error: " + e.getMessage());
-        }
     }
 }

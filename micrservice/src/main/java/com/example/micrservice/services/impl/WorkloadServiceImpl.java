@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -36,20 +35,6 @@ public class WorkloadServiceImpl implements WorkloadService {
         WorkloadModel workloadModel = workloadMapper.toModel(workloadRepository.save(workload));
         log.debug("Workload was created, model {}", workloadModel);
         return workloadModel;
-    }
-
-    @Override
-    public List<WorkloadModel> create(List<CreateWorkloadModel> createWorkloadModels) {
-        List<Workload> workloads = new ArrayList<>();
-
-        for (CreateWorkloadModel createWorkloadModel : createWorkloadModels) {
-            validateCreateWorkloadModel(createWorkloadModel);
-            workloads.add(workloadMapper.toEntity(createWorkloadModel));
-        }
-
-        List<WorkloadModel> workloadModels = workloadMapper.toModel(workloadRepository.saveAll(workloads));
-        log.debug("Workloads were created, models {}", workloadModels);
-        return workloadModels;
     }
 
     private void validateCreateWorkloadModel(CreateWorkloadModel createWorkloadModel) {

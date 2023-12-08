@@ -35,15 +35,4 @@ public interface WorkloadController {
             @ApiResponse(responseCode = "500", description = "Application failed to process the request", content = @Content),
     })
     WorkloadModel create(@RequestBody CreateWorkloadModel createWorkloadModel);
-
-    @PostMapping("/list")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Create a list of workloads")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully created a workload"),
-            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Application failed to process the request", content = @Content),
-    })
-    List<WorkloadModel> create(@RequestBody List<CreateWorkloadModel> createWorkloadModels);
 }

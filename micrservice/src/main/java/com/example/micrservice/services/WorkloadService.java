@@ -9,5 +9,4 @@ import java.util.List;
 public interface WorkloadService {
     List<TrainingSummaryModel> getMonthlySummaryWorkload();
     WorkloadModel create(CreateWorkloadModel createWorkloadModel);
-    List<WorkloadModel> create(List<CreateWorkloadModel> createWorkloadModels);
 }

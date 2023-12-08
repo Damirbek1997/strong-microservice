@@ -1,5 +1,6 @@
 package com.example.micrservice.configs;
 
+import com.example.micrservice.models.crud.CreateWorkloadModel;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
+import java.util.Collections;
 
 @Configuration
 public class JmsConfig {
@@ -25,6 +27,7 @@ public class JmsConfig {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
+        converter.setTypeIdMappings(Collections.singletonMap("CreateWorkloadModel", CreateWorkloadModel.class));
         return converter;
     }
 }
