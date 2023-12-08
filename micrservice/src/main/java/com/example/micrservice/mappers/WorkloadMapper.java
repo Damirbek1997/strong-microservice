@@ -10,4 +10,6 @@ public interface WorkloadMapper {
     WorkloadModel toModel(Workload entity);
     List<WorkloadModel> toModel(List<Workload> entities);
     Workload toEntity(CreateWorkloadModel model);
+    CreateWorkloadModel toCreateModel(String json);
+    List<CreateWorkloadModel> toCreateModels(String json);
 }
