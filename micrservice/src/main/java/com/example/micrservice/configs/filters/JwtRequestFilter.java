@@ -31,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             putUserToContext(request);
         } catch (Exception ex) {
-            log.warn("Something went wrong e {}", ex.getMessage());
+            log.error("Something went wrong, error {}", ex.getMessage());
         } finally {
             filterChain.doFilter(request, response);
         }
