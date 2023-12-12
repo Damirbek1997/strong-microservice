@@ -1,7 +1,6 @@
 package com.example.micrservice.services.impl;
 
 import com.example.micrservice.entities.Workload;
-import com.example.micrservice.enums.ActionType;
 import com.example.micrservice.mappers.WorkloadMapper;
 import com.example.micrservice.models.TrainingSummaryModel;
 import com.example.micrservice.models.WorkloadModel;
@@ -62,7 +61,6 @@ class WorkloadServiceImplTest {
         createWorkloadModel.setIsActive(true);
         createWorkloadModel.setTrainingDuration(10L);
         createWorkloadModel.setTrainingDate(date);
-        createWorkloadModel.setActionType(ActionType.ADD);
 
         Workload workload = new Workload();
         workload.setId(1L);
@@ -72,7 +70,6 @@ class WorkloadServiceImplTest {
         workload.setIsActive(true);
         workload.setTrainingDuration(10L);
         workload.setTrainingDate(date);
-        workload.setActionType(ActionType.ADD);
 
         WorkloadModel workloadModel = new WorkloadModel();
         workloadModel.setId(1L);
@@ -82,7 +79,6 @@ class WorkloadServiceImplTest {
         workloadModel.setIsActive(true);
         workloadModel.setTrainingDuration(10L);
         workloadModel.setTrainingDate(date);
-        workloadModel.setActionType(ActionType.ADD);
 
         when(workloadMapper.toEntity(createWorkloadModel))
                 .thenReturn(workload);
@@ -92,13 +88,12 @@ class WorkloadServiceImplTest {
                 .thenReturn(workloadModel);
 
         WorkloadModel response = workloadService.create(createWorkloadModel);
-        assertEquals(workloadModel.getId(), workload.getId());
-        assertEquals(workloadModel.getTrainerFirstName(), workload.getTrainerFirstName());
-        assertEquals(workloadModel.getTrainerLastName(), workload.getTrainerLastName());
-        assertEquals(workloadModel.getTrainerUsername(), workload.getTrainerUsername());
-        assertEquals(workloadModel.getIsActive(), workload.getIsActive());
-        assertEquals(workloadModel.getActionType(), workload.getActionType());
-        assertEquals(workloadModel.getTrainingDate(), workload.getTrainingDate());
-        assertEquals(workloadModel.getTrainingDuration(), workload.getTrainingDuration());
+        assertEquals(response.getId(), workload.getId());
+        assertEquals(response.getTrainerFirstName(), workload.getTrainerFirstName());
+        assertEquals(response.getTrainerLastName(), workload.getTrainerLastName());
+        assertEquals(response.getTrainerUsername(), workload.getTrainerUsername());
+        assertEquals(response.getIsActive(), workload.getIsActive());
+        assertEquals(response.getTrainingDate(), workload.getTrainingDate());
+        assertEquals(response.getTrainingDuration(), workload.getTrainingDuration());
     }
 }

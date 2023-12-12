@@ -25,7 +25,9 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     @Override
     public List<TrainingSummaryModel> getMonthlySummaryWorkload() {
-        return workloadJdbcRepository.getTrainingSummaryByMonthAndYear();
+        List<TrainingSummaryModel> trainingSummaryModels = workloadJdbcRepository.getTrainingSummaryByMonthAndYear();
+        log.debug("Get TrainingSummaryModel list, models {}", trainingSummaryModels);
+        return trainingSummaryModels;
     }
 
     @Override
@@ -35,6 +37,12 @@ public class WorkloadServiceImpl implements WorkloadService {
         WorkloadModel workloadModel = workloadMapper.toModel(workloadRepository.save(workload));
         log.debug("Workload was created, model {}", workloadModel);
         return workloadModel;
+    }
+
+    @Override
+    public void deleteByUsername(String username) {
+        workloadRepository.deleteByTrainerUsername(username);
+        log.debug("Workload was deleted by username {}", username);
     }
 
     private void validateCreateWorkloadModel(CreateWorkloadModel createWorkloadModel) {
@@ -60,10 +68,6 @@ public class WorkloadServiceImpl implements WorkloadService {
 
         if (createWorkloadModel.getTrainingDuration() == null) {
             throw new BadRequestException("Field trainingDuration must be filled!");
-        }
-
-        if (createWorkloadModel.getActionType() == null) {
-            throw new BadRequestException("Field actionType must be filled!");
         }
     }
 }

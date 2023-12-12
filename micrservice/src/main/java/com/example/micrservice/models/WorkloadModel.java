@@ -1,6 +1,5 @@
 package com.example.micrservice.models;
 
-import com.example.micrservice.enums.ActionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +19,4 @@ public class WorkloadModel {
     private Boolean isActive;
     private Date trainingDate;
     private Long trainingDuration;
-    private ActionType actionType;
 }

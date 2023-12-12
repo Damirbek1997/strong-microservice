@@ -1,6 +1,5 @@
 package com.example.micrservice.models.crud;
 
-import com.example.micrservice.enums.ActionType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +25,4 @@ public class CreateWorkloadModel {
     private Date trainingDate;
     @JsonProperty("trainingDuration")
     private Long trainingDuration;
-    @JsonProperty("actionType")
-    private ActionType actionType;
 }

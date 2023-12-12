@@ -7,8 +7,8 @@ import com.example.micrservice.models.crud.CreateWorkloadModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,20 +23,15 @@ public class WorkloadMapperImpl implements WorkloadMapper {
         model.setIsActive(entity.getIsActive());
         model.setTrainingDate(entity.getTrainingDate());
         model.setTrainingDuration(entity.getTrainingDuration());
-        model.setActionType(entity.getActionType());
 
         return model;
     }
 
     @Override
     public List<WorkloadModel> toModel(List<Workload> entities) {
-        List<WorkloadModel> workloadModels = new ArrayList<>();
-
-        for (Workload entity : entities) {
-            workloadModels.add(toModel(entity));
-        }
-
-        return workloadModels;
+        return entities.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -48,7 +43,6 @@ public class WorkloadMapperImpl implements WorkloadMapper {
         entity.setIsActive(model.getIsActive());
         entity.setTrainingDate(model.getTrainingDate());
         entity.setTrainingDuration(model.getTrainingDuration());
-        entity.setActionType(model.getActionType());
 
         return entity;
     }

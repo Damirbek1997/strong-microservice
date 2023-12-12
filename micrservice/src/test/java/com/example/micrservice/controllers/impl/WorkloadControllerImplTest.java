@@ -1,7 +1,6 @@
 package com.example.micrservice.controllers.impl;
 
 import com.example.micrservice.clients.AuthServiceClient;
-import com.example.micrservice.enums.ActionType;
 import com.example.micrservice.models.ResponseAuthorizationModel;
 import com.example.micrservice.models.TrainingSummaryModel;
 import com.example.micrservice.models.WorkloadModel;
@@ -92,7 +91,6 @@ class WorkloadControllerImplTest {
         createWorkloadModel.setIsActive(true);
         createWorkloadModel.setTrainingDuration(10L);
         createWorkloadModel.setTrainingDate(date);
-        createWorkloadModel.setActionType(ActionType.ADD);
 
         WorkloadModel workloadModel = new WorkloadModel();
         workloadModel.setId(1L);
@@ -102,7 +100,6 @@ class WorkloadControllerImplTest {
         workloadModel.setIsActive(true);
         workloadModel.setTrainingDuration(10L);
         workloadModel.setTrainingDate(date);
-        workloadModel.setActionType(ActionType.ADD);
 
         mockAuthorization();
         when(workloadService.create(any(CreateWorkloadModel.class)))
@@ -119,7 +116,6 @@ class WorkloadControllerImplTest {
                 .andExpect(jsonPath("$.trainerLastName").value(workloadModel.getTrainerLastName()))
                 .andExpect(jsonPath("$.trainerUsername").value(workloadModel.getTrainerUsername()))
                 .andExpect(jsonPath("$.isActive").value(workloadModel.getIsActive()))
-                .andExpect(jsonPath("$.actionType").value(workloadModel.getActionType().name()))
                 .andExpect(jsonPath("$.trainingDuration").value(workloadModel.getTrainingDuration()));
 
         verify(workloadService)

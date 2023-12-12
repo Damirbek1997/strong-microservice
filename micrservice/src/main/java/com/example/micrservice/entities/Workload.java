@@ -1,6 +1,5 @@
 package com.example.micrservice.entities;
 
-import com.example.micrservice.enums.ActionType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,8 +35,4 @@ public class Workload {
 
     @Column(name = "training_duration")
     private Long trainingDuration;
-
-    @Column(name = "action_type")
-    @Enumerated(value = EnumType.STRING)
-    private ActionType actionType;
 }
