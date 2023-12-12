@@ -1,1 +1,1 @@
-# Test task for Microservice part
+# Test task for NoSQL part
