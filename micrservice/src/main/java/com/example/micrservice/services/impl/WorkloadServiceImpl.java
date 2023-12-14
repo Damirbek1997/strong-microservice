@@ -1,40 +1,36 @@
 package com.example.micrservice.services.impl;
 
-import com.example.micrservice.entities.Workload;
-import com.example.micrservice.exceptions.BadRequestException;
-import com.example.micrservice.mappers.WorkloadMapper;
-import com.example.micrservice.models.TrainingSummaryModel;
-import com.example.micrservice.models.WorkloadModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
-import com.example.micrservice.repositories.WorkloadJdbcRepository;
+import com.example.micrservice.models.mongo.WorkloadModel;
 import com.example.micrservice.repositories.WorkloadRepository;
 import com.example.micrservice.services.WorkloadService;
+import com.example.micrservice.services.factory.WorkloadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkloadServiceImpl implements WorkloadService {
     private final WorkloadRepository workloadRepository;
-    private final WorkloadJdbcRepository workloadJdbcRepository;
-    private final WorkloadMapper workloadMapper;
+    private final WorkloadFactory workloadFactory;
 
     @Override
-    public List<TrainingSummaryModel> getMonthlySummaryWorkload() {
-        List<TrainingSummaryModel> trainingSummaryModels = workloadJdbcRepository.getTrainingSummaryByMonthAndYear();
+    public List<WorkloadModel> getMonthlySummaryWorkload() {
+        List<WorkloadModel> trainingSummaryModels = workloadRepository.findAll();
         log.debug("Get TrainingSummaryModel list, models {}", trainingSummaryModels);
         return trainingSummaryModels;
     }
 
     @Override
     public WorkloadModel create(CreateWorkloadModel createWorkloadModel) {
-        validateCreateWorkloadModel(createWorkloadModel);
-        Workload workload = workloadMapper.toEntity(createWorkloadModel);
-        WorkloadModel workloadModel = workloadMapper.toModel(workloadRepository.save(workload));
+        Optional<WorkloadModel> modelOptional = workloadRepository.findByTrainerUsername(createWorkloadModel.getTrainerUsername());
+        WorkloadModel workloadModel = workloadFactory.prepareModel(modelOptional, createWorkloadModel);
+        workloadModel = workloadRepository.save(workloadModel);
         log.debug("Workload was created, model {}", workloadModel);
         return workloadModel;
     }
@@ -43,31 +39,5 @@ public class WorkloadServiceImpl implements WorkloadService {
     public void deleteByUsername(String username) {
         workloadRepository.deleteByTrainerUsername(username);
         log.debug("Workload was deleted by username {}", username);
-    }
-
-    private void validateCreateWorkloadModel(CreateWorkloadModel createWorkloadModel) {
-        if (createWorkloadModel.getTrainerUsername() == null) {
-            throw new BadRequestException("Field trainerUsernameMust be filled!");
-        }
-
-        if (createWorkloadModel.getTrainerFirstName() == null) {
-            throw new BadRequestException("Field trainerFirstName must be filled!");
-        }
-
-        if (createWorkloadModel.getTrainerLastName() == null) {
-            throw new BadRequestException("Field trainerLastName must be filled!");
-        }
-
-        if (createWorkloadModel.getIsActive() == null) {
-            throw new BadRequestException("Field isActive must be filled!");
-        }
-
-        if (createWorkloadModel.getTrainingDate() == null) {
-            throw new BadRequestException("Field trainingDate must be filled!");
-        }
-
-        if (createWorkloadModel.getTrainingDuration() == null) {
-            throw new BadRequestException("Field trainingDuration must be filled!");
-        }
     }
 }

@@ -1,11 +1,13 @@
 package com.example.micrservice.controllers.impl;
 
 import com.example.micrservice.clients.AuthServiceClient;
+import com.example.micrservice.models.MonthModel;
 import com.example.micrservice.models.ResponseAuthorizationModel;
-import com.example.micrservice.models.TrainingSummaryModel;
-import com.example.micrservice.models.WorkloadModel;
+import com.example.micrservice.models.YearModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
+import com.example.micrservice.models.mongo.WorkloadModel;
 import com.example.micrservice.services.impl.WorkloadServiceImpl;
+import com.example.micrservice.utils.DateUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -57,23 +61,23 @@ class WorkloadControllerImplTest {
     @Test
     @WithMockUser
     void getMonthlySummaryWorkload_withValidData_shouldReturnTrainingSummaryModelList() throws Exception {
-        TrainingSummaryModel trainingSummaryModel = new TrainingSummaryModel();
-        trainingSummaryModel.setTrainerFirstName("Ivan");
-        trainingSummaryModel.setTrainerLastName("Ivanov");
-        trainingSummaryModel.setTrainerUsername("Ivan.Ivanov");
-        trainingSummaryModel.setTrainerStatus(true);
+        WorkloadModel workloadModel = new WorkloadModel();
+        workloadModel.setTrainerFirstName("Ivan");
+        workloadModel.setTrainerLastName("Ivanov");
+        workloadModel.setTrainerUsername("Ivan.Ivanov");
+        workloadModel.setTrainerStatus(true);
 
         mockAuthorization();
         when(workloadService.getMonthlySummaryWorkload())
-                .thenReturn(Collections.singletonList(trainingSummaryModel));
+                .thenReturn(Collections.singletonList(workloadModel));
 
         mockMvc.perform(get("/workload/monthly-summary"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.[0].trainerFirstName").value(trainingSummaryModel.getTrainerFirstName()))
-                .andExpect(jsonPath("$.[0].trainerLastName").value(trainingSummaryModel.getTrainerLastName()))
-                .andExpect(jsonPath("$.[0].trainerUsername").value(trainingSummaryModel.getTrainerUsername()))
-                .andExpect(jsonPath("$.[0].trainerStatus").value(trainingSummaryModel.getTrainerStatus()));
+                .andExpect(jsonPath("$.[0].trainerFirstName").value(workloadModel.getTrainerFirstName()))
+                .andExpect(jsonPath("$.[0].trainerLastName").value(workloadModel.getTrainerLastName()))
+                .andExpect(jsonPath("$.[0].trainerUsername").value(workloadModel.getTrainerUsername()))
+                .andExpect(jsonPath("$.[0].trainerStatus").value(workloadModel.getTrainerStatus()));
 
         verify(workloadService)
                 .getMonthlySummaryWorkload();
@@ -92,14 +96,26 @@ class WorkloadControllerImplTest {
         createWorkloadModel.setTrainingDuration(10L);
         createWorkloadModel.setTrainingDate(date);
 
+        MonthModel monthModel = new MonthModel();
+        monthModel.setMonth(DateUtils.getMonth(date));
+        monthModel.setDuration(10L);
+
+        List<MonthModel> monthModels = new ArrayList<>();
+        monthModels.add(monthModel);
+
+        YearModel yearModel = new YearModel();
+        yearModel.setYear(DateUtils.getYear(date));
+        yearModel.setMonthModels(monthModels);
+
+        List<YearModel> yearModels = new ArrayList<>();
+        yearModels.add(yearModel);
+
         WorkloadModel workloadModel = new WorkloadModel();
-        workloadModel.setId(1L);
+        workloadModel.setId("1");
         workloadModel.setTrainerFirstName("Ivan");
         workloadModel.setTrainerLastName("Ivanov");
         workloadModel.setTrainerUsername("Ivan.Ivanov");
-        workloadModel.setIsActive(true);
-        workloadModel.setTrainingDuration(10L);
-        workloadModel.setTrainingDate(date);
+        workloadModel.setYearModels(yearModels);
 
         mockAuthorization();
         when(workloadService.create(any(CreateWorkloadModel.class)))
@@ -115,8 +131,7 @@ class WorkloadControllerImplTest {
                 .andExpect(jsonPath("$.trainerFirstName").value(workloadModel.getTrainerFirstName()))
                 .andExpect(jsonPath("$.trainerLastName").value(workloadModel.getTrainerLastName()))
                 .andExpect(jsonPath("$.trainerUsername").value(workloadModel.getTrainerUsername()))
-                .andExpect(jsonPath("$.isActive").value(workloadModel.getIsActive()))
-                .andExpect(jsonPath("$.trainingDuration").value(workloadModel.getTrainingDuration()));
+                .andExpect(jsonPath("$.trainerStatus").value(workloadModel.getTrainerStatus()));
 
         verify(workloadService)
                 .create(any(CreateWorkloadModel.class));

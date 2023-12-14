@@ -1,8 +1,7 @@
 package com.example.micrservice.controllers;
 
-import com.example.micrservice.models.TrainingSummaryModel;
-import com.example.micrservice.models.WorkloadModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
+import com.example.micrservice.models.mongo.WorkloadModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +22,7 @@ public interface WorkloadController {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request", content = @Content),
     })
-    List<TrainingSummaryModel> getMonthlySummaryWorkload();
+    List<WorkloadModel> getMonthlySummaryWorkload();
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)

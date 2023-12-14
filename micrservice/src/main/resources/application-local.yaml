@@ -1,15 +1,12 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/microservice_local
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: update
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: workload_local
+      username: root
+      password: password
+      authentication-database: admin
 
 logging:
   level:

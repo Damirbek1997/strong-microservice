@@ -1,21 +1,19 @@
 package com.example.micrservice.services.impl;
 
-import com.example.micrservice.entities.Workload;
-import com.example.micrservice.mappers.WorkloadMapper;
-import com.example.micrservice.models.TrainingSummaryModel;
-import com.example.micrservice.models.WorkloadModel;
+import com.example.micrservice.models.MonthModel;
+import com.example.micrservice.models.YearModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
-import com.example.micrservice.repositories.WorkloadJdbcRepository;
+import com.example.micrservice.models.mongo.WorkloadModel;
 import com.example.micrservice.repositories.WorkloadRepository;
+import com.example.micrservice.services.factory.WorkloadFactory;
+import com.example.micrservice.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -28,26 +26,24 @@ class WorkloadServiceImplTest {
     @Mock
     WorkloadRepository workloadRepository;
     @Mock
-    WorkloadJdbcRepository workloadJdbcRepository;
-    @Mock
-    WorkloadMapper workloadMapper;
+    WorkloadFactory workloadFactory;
 
     @Test
     void getMonthlySummaryWorkload_withValidData_shouldReturnTrainingSummaryModelList() {
-        TrainingSummaryModel trainingSummaryModel = new TrainingSummaryModel();
-        trainingSummaryModel.setTrainerUsername("Trainer.Trainer");
-        trainingSummaryModel.setTrainerFirstName("Trainer");
-        trainingSummaryModel.setTrainerLastName("Trainer");
-        trainingSummaryModel.setTrainerStatus(true);
+        WorkloadModel workloadModel = new WorkloadModel();
+        workloadModel.setTrainerUsername("Trainer.Trainer");
+        workloadModel.setTrainerFirstName("Trainer");
+        workloadModel.setTrainerLastName("Trainer");
+        workloadModel.setTrainerStatus(true);
 
-        when(workloadJdbcRepository.getTrainingSummaryByMonthAndYear())
-                .thenReturn(Collections.singletonList(trainingSummaryModel));
+        when(workloadRepository.findAll())
+                .thenReturn(Collections.singletonList(workloadModel));
 
-        List<TrainingSummaryModel> responses = workloadService.getMonthlySummaryWorkload();
+        List<WorkloadModel> responses = workloadService.getMonthlySummaryWorkload();
 
         assertEquals(1, responses.size());
-        verify(workloadJdbcRepository)
-                .getTrainingSummaryByMonthAndYear();
+        verify(workloadRepository)
+                .findAll();
     }
 
     @Test
@@ -62,38 +58,40 @@ class WorkloadServiceImplTest {
         createWorkloadModel.setTrainingDuration(10L);
         createWorkloadModel.setTrainingDate(date);
 
-        Workload workload = new Workload();
-        workload.setId(1L);
-        workload.setTrainerFirstName("Ivan");
-        workload.setTrainerLastName("Ivanov");
-        workload.setTrainerUsername("Ivan.Ivanov");
-        workload.setIsActive(true);
-        workload.setTrainingDuration(10L);
-        workload.setTrainingDate(date);
+        MonthModel monthModel = new MonthModel();
+        monthModel.setMonth(DateUtils.getMonth(date));
+        monthModel.setDuration(10L);
+
+        List<MonthModel> monthModels = new ArrayList<>();
+        monthModels.add(monthModel);
+
+        YearModel yearModel = new YearModel();
+        yearModel.setYear(DateUtils.getYear(date));
+        yearModel.setMonthModels(monthModels);
+
+        List<YearModel> yearModels = new ArrayList<>();
+        yearModels.add(yearModel);
 
         WorkloadModel workloadModel = new WorkloadModel();
-        workloadModel.setId(1L);
+        workloadModel.setId("1L");
         workloadModel.setTrainerFirstName("Ivan");
         workloadModel.setTrainerLastName("Ivanov");
         workloadModel.setTrainerUsername("Ivan.Ivanov");
-        workloadModel.setIsActive(true);
-        workloadModel.setTrainingDuration(10L);
-        workloadModel.setTrainingDate(date);
+        workloadModel.setYearModels(yearModels);
 
-        when(workloadMapper.toEntity(createWorkloadModel))
-                .thenReturn(workload);
-        when(workloadRepository.save(workload))
-                .thenReturn(workload);
-        when(workloadMapper.toModel(workload))
+        when(workloadRepository.findByTrainerUsername(createWorkloadModel.getTrainerUsername()))
+                .thenReturn(Optional.of(workloadModel));
+        when(workloadFactory.prepareModel(Optional.of(workloadModel), createWorkloadModel))
+                .thenReturn(workloadModel);
+        when(workloadRepository.save(workloadModel))
                 .thenReturn(workloadModel);
 
         WorkloadModel response = workloadService.create(createWorkloadModel);
-        assertEquals(response.getId(), workload.getId());
-        assertEquals(response.getTrainerFirstName(), workload.getTrainerFirstName());
-        assertEquals(response.getTrainerLastName(), workload.getTrainerLastName());
-        assertEquals(response.getTrainerUsername(), workload.getTrainerUsername());
-        assertEquals(response.getIsActive(), workload.getIsActive());
-        assertEquals(response.getTrainingDate(), workload.getTrainingDate());
-        assertEquals(response.getTrainingDuration(), workload.getTrainingDuration());
+
+        assertEquals(response.getId(), workloadModel.getId());
+        assertEquals(response.getTrainerFirstName(), workloadModel.getTrainerFirstName());
+        assertEquals(response.getTrainerLastName(), workloadModel.getTrainerLastName());
+        assertEquals(response.getTrainerUsername(), workloadModel.getTrainerUsername());
+        assertEquals(response.getYearModels(), workloadModel.getYearModels());
     }
 }
