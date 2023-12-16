@@ -5,7 +5,7 @@ import com.example.micrservice.models.YearModel;
 import com.example.micrservice.models.crud.CreateWorkloadModel;
 import com.example.micrservice.models.mongo.WorkloadModel;
 import com.example.micrservice.repositories.WorkloadRepository;
-import com.example.micrservice.services.factory.WorkloadFactory;
+import com.example.micrservice.services.factory.YearModelFactory;
 import com.example.micrservice.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class WorkloadServiceImplTest {
     @Mock
     WorkloadRepository workloadRepository;
     @Mock
-    WorkloadFactory workloadFactory;
+    YearModelFactory yearModelFactory;
 
     @Test
     void getMonthlySummaryWorkload_withValidData_shouldReturnTrainingSummaryModelList() {
@@ -81,8 +81,6 @@ class WorkloadServiceImplTest {
 
         when(workloadRepository.findByTrainerUsername(createWorkloadModel.getTrainerUsername()))
                 .thenReturn(Optional.of(workloadModel));
-        when(workloadFactory.prepareModel(Optional.of(workloadModel), createWorkloadModel))
-                .thenReturn(workloadModel);
         when(workloadRepository.save(workloadModel))
                 .thenReturn(workloadModel);
 

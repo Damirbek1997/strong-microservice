@@ -1,11 +1,12 @@
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: workload_stage
-      username: rootuser
-      password: rootpass
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB}
+      username: ${MONGO_USER}
+      password: ${MONGO_PASS}
+      authentication-database: admin
 
 logging:
   level:
